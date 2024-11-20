@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Peer from "peerjs";
 import { io } from "socket.io-client";
 
 const VideoFeed = ({ roomId }) => {
   const videoGridRef = useRef(null);
-  const [peer, setPeer] = useState(null);
 
   useEffect(() => {
     // Initialize socket connection
@@ -14,16 +13,11 @@ const VideoFeed = ({ roomId }) => {
 
     // Initialize PeerJS
     const peerInstance = new Peer();
-    setPeer(peerInstance);
 
     // Access user's media
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
       .then((stream) => {
-        const myVideo = document.createElement("video");
-        myVideo.muted = true;
-        addVideoStream(myVideo, stream);
-
         // Listen for incoming calls
         peerInstance.on("call", (call) => {
           call.answer(stream);
@@ -35,7 +29,8 @@ const VideoFeed = ({ roomId }) => {
 
         // Handle new user connection
         socketInstance.on("user-connected", (userId) => {
-          connectToNewUser(userId, stream);
+          console.log("User connected: ", userId);
+          connectToNewUser(userId, stream, peerInstance);
         });
       });
 
@@ -52,8 +47,8 @@ const VideoFeed = ({ roomId }) => {
   }, [roomId]);
 
   // Connect to new user
-  const connectToNewUser = (userId, stream) => {
-    const call = peer.call(userId, stream);
+  const connectToNewUser = (userId, stream, peerInstance) => {
+    const call = peerInstance.call(userId, stream);
     const video = document.createElement("video");
     call.on("stream", (userVideoStream) => {
       addVideoStream(video, userVideoStream);
