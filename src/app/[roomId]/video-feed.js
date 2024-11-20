@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Peer from "peerjs";
 import { io } from "socket.io-client";
 
 const VideoFeed = ({ roomId }) => {
   const videoGridRef = useRef(null);
+  const [imageData, setImageData] = useState(null);
 
   useEffect(() => {
     // Initialize socket connection
@@ -68,6 +69,24 @@ const VideoFeed = ({ roomId }) => {
       videoGridRef.current.append(video);
     }
   };
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      const video = document.querySelector("video");
+
+      if (video) {
+        const canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas
+          .getContext("2d")
+          .drawImage(video, 0, 0, canvas.width, canvas.height);
+        setImageData(canvas.toDataURL("image/png"));
+      }
+    }, 10000);
+
+    return () => clearInterval(intervalId);
+  }, [roomId]);
 
   return (
     <div
