@@ -81,12 +81,24 @@ const VideoFeed = ({ roomId }) => {
         canvas
           .getContext("2d")
           .drawImage(video, 0, 0, canvas.width, canvas.height);
-        setImageData(canvas.toDataURL("image/png"));
+        setImageData(canvas.toDataURL("image/jpeg", "1.0"));
       }
     }, 10000);
 
     return () => clearInterval(intervalId);
   }, [roomId]);
+
+  useEffect(() => {
+    if (imageData) {
+      fetch("/api/process-frame", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ frame: imageData }),
+      });
+    }
+  }, [imageData]);
 
   return (
     <div
