@@ -9,12 +9,9 @@ const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
-console.log("SERVER.TS");
-
 app.prepare().then(() => {
   const server = createServer((req, res) => {
     const parsedUrl = parse(req.url, true);
-    console.log("parsedUrl", parsedUrl);
 
     // Redirect `/` to a random room with a UUID
     if (parsedUrl.pathname === "/") {
@@ -29,11 +26,9 @@ app.prepare().then(() => {
   });
 
   // Attach socket.io to server
-  console.log("Attaching socket.io to server");
   const io = new SocketIO(server, { path: "/socket.io" });
 
   // Handle socket connections
-  console.log("Handling socket connections");
   io.on("connection", (socket) => {
     console.log("User connected");
 
