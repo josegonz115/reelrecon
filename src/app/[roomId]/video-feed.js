@@ -2,11 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import Peer from "peerjs";
+import resemble from "resemblejs";
 import { io } from "socket.io-client";
 
 const VideoFeed = ({ roomId }) => {
   const videoGridRef = useRef(null);
   const [imageData, setImageData] = useState(null);
+  const prevImageDataRef = useRef(null);
 
   useEffect(() => {
     // Initialize socket connection
@@ -71,6 +73,24 @@ const VideoFeed = ({ roomId }) => {
   };
 
   useEffect(() => {
+    const options = {
+      output: {
+        errorColor: {
+          red: 255,
+          green: 0,
+          blue: 255,
+        },
+        errorType: "movement",
+        transparency: 0.3,
+        largeImageThreshold: 1200,
+        useCrossOrigin: false,
+        outputDiff: true,
+      },
+      scaleToSameSize: true,
+      ignore: "antialiasing",
+    };
+    resemble.outputSettings(options);
+
     const intervalId = setInterval(() => {
       const video = document.querySelector("video");
 
@@ -81,9 +101,26 @@ const VideoFeed = ({ roomId }) => {
         canvas
           .getContext("2d")
           .drawImage(video, 0, 0, canvas.width, canvas.height);
-        setImageData(canvas.toDataURL("image/jpeg", "1.0"));
+
+        const currImageData = canvas.toDataURL("image/jpeg", 1.0);
+
+        // Only update imageData if frame is different enough from previous frame
+        if (prevImageDataRef.current) {
+          resemble(currImageData)
+            .compareTo(prevImageDataRef.current)
+            .onComplete((data) => {
+              if (data.misMatchPercentage > 50) {
+                setImageData(currImageData);
+              }
+            });
+        } else {
+          // First frame
+          setImageData(currImageData);
+        }
+
+        prevImageDataRef.current = currImageData;
       }
-    }, 10000);
+    }, 5000);
 
     return () => clearInterval(intervalId);
   }, [roomId]);
