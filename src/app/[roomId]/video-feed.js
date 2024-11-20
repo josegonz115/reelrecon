@@ -70,14 +70,11 @@ const VideoFeed = ({ roomId }) => {
   };
 
   return (
-    <div>
-      <h1>Room: {roomId}</h1>
-      <div
-        id="video-grid"
-        ref={videoGridRef}
-        style={{ display: "grid", gap: "10px" }}
-      ></div>
-    </div>
+    <div
+      id="video-grid"
+      ref={videoGridRef}
+      style={{ display: "grid", gap: "10px" }}
+    ></div>
   );
 };
 
