@@ -61,7 +61,7 @@ export default function Home() {
       />
       <Button
         onClick={() => handleFishHistoryClose()}
-        className="fixed bottom-0 left-0 z-50 m-4 rounded-full bg-green-500 p-12"
+        className="fixed bottom-0 left-0 m-4 rounded-full bg-blue-500 p-6"
       >
         <ClipboardDocumentListIcon className="h-6" />
       </Button>

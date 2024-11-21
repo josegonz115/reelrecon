@@ -52,13 +52,17 @@ export default function FishHistory({
       className="z-40"
     >
       <div className="fixed inset-0 flex items-center justify-center">
-        <div className="flex h-full w-full flex-col items-center rounded-lg bg-gray-900 text-lg">
+        <div className="flex h-full w-full flex-col items-center rounded-lg bg-gray-900 p-8 text-lg">
+          <p className="text-2xl">History</p>
           {logs.map((log, idx) => (
             <div
-              className="flex flex-row"
+              className="flex w-full flex-row items-center justify-between border-b border-gray-400 py-6"
               key={idx}
             >
-              <p>{`${log.name} ${format(log.date, "M/d/yy HH:mm")}`}</p>
+              <p>{log.name.charAt(0).toUpperCase() + log.name.slice(1)}</p>
+              <p className="text-gray-400">
+                {format(log.date, "M/d/yy HH:mm")}
+              </p>
               {log.status === "caught" ? <FishIcon /> : <FishOffIcon />}
               <Link href={`${pathname}/${log.name}`}>
                 <ChevronRightIcon className="h-6" />
@@ -69,7 +73,7 @@ export default function FishHistory({
       </div>
       <Button
         onClick={() => handleFishHistoryClose()}
-        className="fixed bottom-0 left-0 z-50 m-4 rounded-full bg-blue-500 p-12"
+        className="fixed bottom-0 left-0 m-4 rounded-full bg-blue-500 p-6"
       >
         <XMarkIcon className="h-6" />
       </Button>
