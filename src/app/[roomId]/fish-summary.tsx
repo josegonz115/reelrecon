@@ -1,9 +1,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { FishIcon } from "@/components/fish-icon";
+import { FishOffIcon } from "@/components/fish-off-icon";
 import { ChevronRightIcon } from "@heroicons/react/24/solid";
-
-import { FishIcon } from "../components/fish-icon";
-import { FishOffIcon } from "../components/fish-off-icon";
 
 export default function FishSummary({
   name,
@@ -24,7 +23,7 @@ export default function FishSummary({
           <FishOffIcon className="h-8 text-white" />
         )}
       </div>
-      <Link href={`${pathname}/${name.toLowerCase()}`}>
+      <Link href={`${pathname}/${name}`}>
         <ChevronRightIcon className="h-6" />
       </Link>
     </div>
