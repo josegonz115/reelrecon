@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import Notification from "@/components/notification";
 import { IMAGE_URLS } from "@/lib/fish-data";
+import { ChevronLeftIcon } from "@heroicons/react/24/solid";
 
 const getImageUrl = (text: string) => {
   const image = IMAGE_URLS?.find((item) => item.text === text);
@@ -19,6 +21,7 @@ const getFishDesc = (text: string) => {
 
 export default function Home() {
   const params = useParams();
+  const roomId = params.roomId;
   let fishName: string;
   if (typeof params.fish !== "string") {
     fishName = decodeURIComponent(params.fish![0]);
@@ -38,7 +41,12 @@ export default function Home() {
         handleFishNotifResponse={handleFishNotifResponse}
         notificationOpen={notificationOpen}
       />
-      <h1>{fishName}</h1>
+      <div className="flex w-full items-center">
+        <Link href={`/${roomId}`}>
+          <ChevronLeftIcon className="h-6 justify-self-start" />
+        </Link>
+        <h1 className="w-full pr-4 text-center">{fishName}</h1>
+      </div>
       <img
         className="max-h-52"
         src={getImageUrl(fishName)}
