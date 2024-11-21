@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useParams } from "next/navigation";
 import Notification from "@/components/notification";
 import { db } from "@/firebase";
+import { Button } from "@headlessui/react";
+import { ClipboardDocumentListIcon } from "@heroicons/react/24/solid";
 import { addDoc, collection } from "firebase/firestore";
 
 import FishHistory from "./fish-history";
@@ -46,7 +48,8 @@ export default function Home() {
   };
 
   const handleFishHistoryClose = () => {
-    setHistoryOpen(false);
+    console.log("toggle");
+    setHistoryOpen((prev) => !prev);
   };
 
   return (
@@ -56,6 +59,12 @@ export default function Home() {
         handleFishNotifResponse={handleFishNotifResponse}
         notificationOpen={notificationOpen}
       />
+      <Button
+        onClick={() => handleFishHistoryClose()}
+        className="fixed bottom-0 left-0 z-50 m-4 rounded-full bg-green-500 p-12"
+      >
+        <ClipboardDocumentListIcon className="h-6" />
+      </Button>
       <FishHistory
         handleFishHistoryClose={handleFishHistoryClose}
         historyOpen={historyOpen}
