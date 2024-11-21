@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ChevronRightIcon } from "@heroicons/react/24/solid";
 
 import { FishIcon } from "../components/fish-icon";
@@ -10,6 +12,8 @@ export default function FishSummary({
   name: string;
   caught: boolean;
 }) {
+  const pathname = usePathname();
+
   return (
     <div className="flex min-w-full items-center justify-between">
       <div className="flex flex-row items-center gap-4">
@@ -20,7 +24,9 @@ export default function FishSummary({
           <FishOffIcon className="h-8 text-white" />
         )}
       </div>
-      <ChevronRightIcon className="h-6" />
+      <Link href={`${pathname}/${name.toLowerCase()}`}>
+        <ChevronRightIcon className="h-6" />
+      </Link>
     </div>
   );
 }
