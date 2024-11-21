@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { useParams } from "next/navigation";
+import Notification from "@/components/notification";
 import { IMAGE_URLS } from "@/lib/fish-data";
 
 const getImageUrl = (text: string) => {
@@ -24,8 +26,18 @@ export default function Home() {
     fishName = decodeURIComponent(params.fish);
   }
 
+  let [notificationOpen, setNotificationOpen] = useState(false);
+  const handleFishNotifResponse = (caught: boolean) => {
+    setNotificationOpen(false);
+  };
+
   return (
     <main className="flex flex-col items-center gap-8 p-8">
+      <Notification
+        fishName={fishName}
+        handleFishNotifResponse={handleFishNotifResponse}
+        notificationOpen={notificationOpen}
+      />
       <h1>{fishName}</h1>
       <img
         className="max-h-52"
