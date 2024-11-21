@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import Notification from "@/components/notification";
+import { db } from "@/firebase";
+import { addDoc, collection } from "firebase/firestore";
 
 import FishSummary from "./fish-summary";
 import Tips from "./tips";
@@ -26,6 +28,21 @@ export default function Home() {
     setFishCaught(caught);
   };
 
+  const addFish = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+
+    try {
+      const docRef = await addDoc(collection(db, "log"), {
+        name: "mudfish",
+        timestamp: new Date().getTime(),
+        status: "caught",
+      });
+      console.log("Document written with ID: ", docRef.id);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  };
+
   return (
     <main className="flex flex-col items-center gap-8 p-8">
       <Notification
@@ -42,6 +59,15 @@ export default function Home() {
         caught={fishCaught}
       />
       <Tips fishingTips={fishingTips} />
+
+      <button
+        className="bg-blue-500 p-4"
+        onClick={(e) => {
+          addFish(e);
+        }}
+      >
+        ADD FISH
+      </button>
     </main>
   );
 }
