@@ -67,6 +67,7 @@ const VideoFeed = ({ roomId }) => {
     video.addEventListener("loadedmetadata", () => {
       video.play();
     });
+    video.style.borderRadius = "12px";
     if (videoGridRef.current) {
       videoGridRef.current.append(video);
     }
