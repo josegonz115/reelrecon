@@ -6,6 +6,7 @@ import Notification from "@/components/notification";
 import { db } from "@/firebase";
 import { addDoc, collection } from "firebase/firestore";
 
+import FishHistory from "./fish-history";
 import FishSummary from "./fish-summary";
 import Tips from "./tips";
 import VideoFeed from "./video-feed";
@@ -21,7 +22,8 @@ export default function Home() {
     "Fish during the early morning or late evening",
     "Stay quiet and minimize movement",
   ]);
-  let [notificationOpen, setNotificationOpen] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(true);
 
   const handleFishNotifResponse = (caught: boolean) => {
     setNotificationOpen(false);
@@ -43,12 +45,20 @@ export default function Home() {
     }
   };
 
+  const handleFishHistoryClose = () => {
+    setHistoryOpen(false);
+  };
+
   return (
     <main className="flex flex-col items-center gap-8 p-8">
       <Notification
         fishName={fishName}
         handleFishNotifResponse={handleFishNotifResponse}
         notificationOpen={notificationOpen}
+      />
+      <FishHistory
+        handleFishHistoryClose={handleFishHistoryClose}
+        historyOpen={historyOpen}
       />
       <div className="justify-self-start">
         <VideoFeed roomId={roomId} />
