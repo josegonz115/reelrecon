@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
+import Notification from "@/components/notification";
 
 import FishSummary from "./fish-summary";
 import Tips from "./tips";
@@ -18,9 +19,20 @@ export default function Home() {
     "Fish during the early morning or late evening",
     "Stay quiet and minimize movement",
   ]);
+  let [notificationOpen, setNotificationOpen] = useState(false);
+
+  const handleFishNotifResponse = (caught: boolean) => {
+    setNotificationOpen(false);
+    setFishCaught(caught);
+  };
 
   return (
     <main className="flex flex-col items-center gap-8 p-8">
+      <Notification
+        fishName={fishName}
+        handleFishNotifResponse={handleFishNotifResponse}
+        notificationOpen={notificationOpen}
+      />
       <div className="justify-self-start">
         <VideoFeed roomId={roomId} />
         <h1 className="pt-2 text-center">Video Feed</h1>
