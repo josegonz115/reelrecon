@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import Notification from "@/components/notification";
 import { IMAGE_URLS } from "@/lib/fish-data";
 import { ChevronLeftIcon } from "@heroicons/react/24/solid";
 
@@ -35,20 +34,8 @@ export default function Home() {
   }
   fishName = fishName.charAt(0).toUpperCase() + fishName.slice(1);
 
-  const [notificationOpen, setNotificationOpen] = useState(false);
-  const handleFishNotifResponse = (name: string, caught: boolean) => {
-    localStorage.setItem("name", name);
-    localStorage.setItem("state", caught ? "caught" : "seen");
-    setNotificationOpen(false);
-  };
-
   return (
     <main className="flex flex-col items-center gap-8 overflow-y-scroll p-8">
-      <Notification
-        fishName={fishName}
-        handleFishNotifResponse={handleFishNotifResponse}
-        notificationOpen={notificationOpen}
-      />
       <div className="flex w-full items-center">
         <Link href={`/${roomId}`}>
           <ChevronLeftIcon className="h-6 justify-self-start" />
