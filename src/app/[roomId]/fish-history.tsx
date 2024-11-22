@@ -7,10 +7,18 @@ import { db } from "@/firebase";
 import {
   AdjustmentsHorizontalIcon,
   ChevronRightIcon,
+  TrashIcon,
 } from "@heroicons/react/24/solid";
 import { format } from "date-fns";
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
-import { motion } from "framer-motion";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  orderBy,
+  query,
+} from "firebase/firestore";
+import { motion, useAnimate } from "framer-motion";
 
 export default function FishHistory({ historyOpen }: { historyOpen: boolean }) {
   const pathname = usePathname();
@@ -26,6 +34,7 @@ export default function FishHistory({ historyOpen }: { historyOpen: boolean }) {
   const [filterSetting, setFilterSetting] = useState("all");
   const [caughtCount, setCaughtCount] = useState(0);
   const [seenCount, setSeenCount] = useState(0);
+  const [scope, animate] = useAnimate();
 
   useEffect(() => {
     const fetchLogs = async () => {
@@ -49,6 +58,22 @@ export default function FishHistory({ historyOpen }: { historyOpen: boolean }) {
 
     fetchLogs();
   }, []);
+
+  const deleteLog = async (id: string, caught: boolean) => {
+    try {
+      await deleteDoc(doc(db, "log", id)).then(() => {
+        console.log("Document successfully deleted!");
+        setLogs(logs.filter((log) => log.id !== id));
+        if (caught) {
+          setCaughtCount((cnt) => cnt - 1);
+        } else {
+          setSeenCount((cnt) => cnt - 1);
+        }
+      });
+    } catch (e) {
+      console.error("Error deleting log: ", e);
+    }
+  };
 
   const animationVariants = {
     open: {
@@ -105,9 +130,48 @@ export default function FishHistory({ historyOpen }: { historyOpen: boolean }) {
     closed: { y: 0, opacity: 25, transition: { y: { stiffness: 1000 } } },
   };
 
+  const trashVariants = {
+    open: {
+      y: 0,
+      opacity: 1,
+      transition: { y: { stiffness: 1000, velocity: -100 }, delay: 2 },
+    },
+    closed: {
+      opacity: 0,
+      transition: { duration: 0.1 },
+    },
+  };
+
   const handleFilter: any = () => {
     setFilter((prev) => !prev);
   };
+
+  function handleDragEnd(
+    id: string,
+    caught: boolean,
+    event: MouseEvent | TouchEvent | PointerEvent,
+    info: {
+      offset: { x: number; y: number };
+      velocity: { x: number; y: number };
+    }
+  ) {
+    const offset = info.offset.x;
+    const velocity = info.velocity.x;
+
+    if (offset >= 275 && velocity >= 0) {
+      scope.current &&
+        animate(scope.current, { x: "-100%" }, { duration: 0.2 });
+      setTimeout(() => {
+        deleteLog(id, caught);
+      }, 200);
+    } else {
+      scope.current &&
+        animate(scope.current, { x: 0, opacity: 1 }, { duration: 0.2 });
+    }
+    setTimeout(() => {
+      document.querySelector("#deletebg" + id)?.classList.remove("bg-red-600");
+    }, 500);
+  }
 
   return (
     <motion.div
@@ -168,20 +232,54 @@ export default function FishHistory({ historyOpen }: { historyOpen: boolean }) {
                 log.status === filterSetting || filterSetting === "all"
             )
             .map((log, idx) => (
-              <motion.li
-                className="flex w-full flex-row items-center justify-between border-b border-gray-400 py-6"
+              <motion.div
+                className="relative w-full"
                 key={idx}
-                variants={itemVariants}
               >
-                <p>{log.name.charAt(0).toUpperCase() + log.name.slice(1)}</p>
-                <p className="text-gray-400">
-                  {format(log.date, "M/d/yy HH:mm")}
-                </p>
-                {log.status === "caught" ? <FishIcon /> : <FishOffIcon />}
-                <Link href={`${pathname}/${log.name}`}>
-                  <ChevronRightIcon className="h-6" />
-                </Link>
-              </motion.li>
+                <motion.div
+                  className="transform cursor-grab overflow-y-hidden overflow-x-visible [-ms-overflow-style:none] [scrollbar-width:none] focus:border-0 [&::-webkit-scrollbar]:hidden"
+                  whileTap={{ cursor: "grabbing" }}
+                  layout
+                  transition={{ type: "spring", stiffness: 600, damping: 30 }}
+                >
+                  <motion.li
+                    className="flex w-full flex-row items-center justify-between border-b border-gray-400 bg-sky-950 py-6"
+                    variants={itemVariants}
+                    drag="x"
+                    dragDirectionLock
+                    onDragEnd={(event, info) =>
+                      handleDragEnd(log.id, log.status == "caught", event, info)
+                    }
+                    dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+                    dragElastic={{ left: 0, right: 0.2, top: 0, bottom: 0 }}
+                    onDragStart={() =>
+                      document
+                        .querySelector("#deletebg" + log.id)
+                        ?.classList.add("bg-red-600")
+                    }
+                  >
+                    <p className="pl-1">
+                      {log.name.charAt(0).toUpperCase() + log.name.slice(1)}
+                    </p>
+                    <div className="flex flex-row items-center gap-4">
+                      <p className="text-gray-400">
+                        {format(log.date, "M/d/yy HH:mm")}
+                      </p>
+                      {log.status === "caught" ? <FishIcon /> : <FishOffIcon />}
+                      <Link href={`${pathname}/${log.name}`}>
+                        <ChevronRightIcon className="h-6" />
+                      </Link>
+                    </div>
+                  </motion.li>
+                </motion.div>
+                <motion.div
+                  id={"deletebg" + log.id}
+                  className="absolute inset-0 -z-10 ml-[1px] mt-[1px] flex w-full flex-row place-items-center justify-self-start pr-4"
+                  variants={trashVariants}
+                >
+                  <TrashIcon className="h-6 pl-4" />
+                </motion.div>
+              </motion.div>
             ))}
         </motion.ul>
         <motion.div
