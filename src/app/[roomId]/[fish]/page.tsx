@@ -36,7 +36,9 @@ export default function Home() {
   fishName = fishName.charAt(0).toUpperCase() + fishName.slice(1);
 
   const [notificationOpen, setNotificationOpen] = useState(false);
-  const handleFishNotifResponse = (caught: boolean) => {
+  const handleFishNotifResponse = (name: string, caught: boolean) => {
+    localStorage.setItem("name", name);
+    localStorage.setItem("state", caught ? "caught" : "seen");
     setNotificationOpen(false);
   };
 

@@ -8,7 +8,7 @@ export default function Notification({
   notificationOpen,
 }: {
   fishName: string;
-  handleFishNotifResponse: (caught: boolean) => void;
+  handleFishNotifResponse: (name: string, caught: boolean) => void;
   notificationOpen: boolean;
 }) {
   const addFish = async (
@@ -33,7 +33,7 @@ export default function Notification({
   return (
     <Dialog
       open={notificationOpen}
-      onClose={() => handleFishNotifResponse(false)}
+      onClose={() => handleFishNotifResponse(fishName, false)}
     >
       <DialogBackdrop className="fixed inset-0 bg-black/30" />
       <div className="fixed inset-0 flex w-screen items-center justify-center">
@@ -47,7 +47,7 @@ export default function Notification({
             <button
               onClick={(e) => {
                 addFish(e, false);
-                handleFishNotifResponse(false);
+                handleFishNotifResponse(fishName, false);
               }}
               className="h-full w-full border-r border-gray-400 py-3"
             >
@@ -56,7 +56,7 @@ export default function Notification({
             <button
               onClick={(e) => {
                 addFish(e, true);
-                handleFishNotifResponse(true);
+                handleFishNotifResponse(fishName, true);
               }}
               className="w-full py-3"
             >
