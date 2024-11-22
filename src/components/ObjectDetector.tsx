@@ -1,3 +1,4 @@
+'use client'
 import { useEffect, useRef } from 'react';
 import { io, Socket} from 'socket.io-client';
 
@@ -7,18 +8,14 @@ avg fps: 12.456194878305585
 Camera resolution: 640.0x480.0
 */ 
 
-
-
-export default function Home() {
+export default function ObjectDetector() {
     const socketRef = useRef<Socket | null>(null);
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const processedImgRef = useRef<HTMLImageElement | null>(null);
 
     useEffect(() => {
-    // socketRef.current = io('http://0.0.0.0:1947');
-    socketRef.current = io('http://192.168.4.52:1947'); // ip address
-    // socketRef.current = io('http://172.23.89.169:1947'); // ip address
+    socketRef.current = io('http://0.0.0.0:1947');
 
     socketRef.current.on('connect', () => {
         console.log('Connected to Python backend');
@@ -88,22 +85,22 @@ export default function Home() {
             return;
         }
         // CROPPING STARTS
-        const cropWidth = 640;
-        const cropHeight = 640;
-        canvas.width = cropWidth;
-        canvas.height = cropHeight;
-        // calc cropping box
-        const videoWidth = video.videoWidth;
-        const videoHeight = video.videoHeight;
-        const cropX = (videoWidth - cropWidth) / 2;
-        const cropY = (videoHeight - cropHeight) / 2;
-        context.drawImage(video, cropX, cropY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
+        // const cropWidth = 640;
+        // const cropHeight = 640;
+        // canvas.width = cropWidth;
+        // canvas.height = cropHeight;
+        // // calc cropping box
+        // const videoWidth = video.videoWidth;
+        // const videoHeight = video.videoHeight;
+        // const cropX = (videoWidth - cropWidth) / 2;
+        // const cropY = (videoHeight - cropHeight) / 2;
+        // context.drawImage(video, cropX, cropY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
         // CROPPING ENDS
         
         // normal draw canvas
-        // canvas.width = video.videoWidth;
-        // canvas.height = video.videoHeight;
-        // context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
         // end 
 
         canvas.toBlob((blob) => {
@@ -133,7 +130,8 @@ export default function Home() {
     };
     startVideo();
     // (one --> 1000) second performed well
-    const intervalId = setInterval(captureFrameAndSendToBackend, 83);
+    // (13fps --> 83) worked good on my gpu only
+    const intervalId = setInterval(captureFrameAndSendToBackend, 166);
     // done testing my webcam ------------------------------------------------------------------------------
 
     // // Connect to ESP32 camera via WebSocket
@@ -177,8 +175,8 @@ export default function Home() {
         <div>
           <h2>Original Stream</h2>
           {/* <img ref={videoRef} alt="Original Video Stream" />   Originally  */}
-          <video ref={videoRef} className="w-[640px] h-[640px]" playsInline muted></video>
-          <canvas ref={canvasRef} className="w-[640px] h-[640px] absolute hidden"></canvas>
+          <video ref={videoRef} className="w-[320px] h-[320px] hidden" playsInline muted></video>
+          <canvas ref={canvasRef} className="w-[320px] h-[320px] absolute hidden"></canvas>
         </div>
         <div>
           <h2>Processed Stream</h2>
