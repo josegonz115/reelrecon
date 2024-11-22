@@ -7,6 +7,7 @@ import { io } from "socket.io-client";
 
 const VideoFeed = ({ roomId }) => {
   const videoGridRef = useRef(null);
+  const [existingVideo, setExistingVideo] = useState(false);
   const [imageData, setImageData] = useState(null);
   const prevImageDataRef = useRef(null);
 
@@ -58,6 +59,7 @@ const VideoFeed = ({ roomId }) => {
     });
     call.on("close", () => {
       video.remove();
+      setExistingVideo(false);
     });
   };
 
@@ -70,6 +72,7 @@ const VideoFeed = ({ roomId }) => {
     video.style.borderRadius = "12px";
     if (videoGridRef.current) {
       videoGridRef.current.append(video);
+      setExistingVideo(true);
     }
   };
 
@@ -139,11 +142,14 @@ const VideoFeed = ({ roomId }) => {
   }, [imageData]);
 
   return (
-    <div
-      id="video-grid"
-      ref={videoGridRef}
-      style={{ display: "grid", gap: "10px" }}
-    ></div>
+    <>
+      <div
+        id="video-grid"
+        ref={videoGridRef}
+        style={{ display: "grid", gap: "10px" }}
+      ></div>
+      {!existingVideo && <div className="bg-gray-500 p-40"></div>}
+    </>
   );
 };
 
