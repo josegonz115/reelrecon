@@ -4,8 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import Peer from "peerjs";
 import resemble from "resemblejs";
 import { io } from "socket.io-client";
+import ObjectDetector from "@/components/ObjectDetector";
 
-const VideoFeed = ({ roomId }) => {
+const VideoFeed = ({ roomId, setFishName }) => {
   const videoGridRef = useRef(null);
   const [existingVideo, setExistingVideo] = useState(false);
   const [imageData, setImageData] = useState(null);
@@ -142,16 +143,17 @@ const VideoFeed = ({ roomId }) => {
   }, [imageData]);
 
   return (
-    <>
-      <div
+    <div className="rounded-[12px] bg-gray-500 w-full h-fit-content">
+      {/* <div
         id="video-grid"
         ref={videoGridRef}
         style={{ display: "grid", gap: "10px" }}
-      ></div>
-      {!existingVideo && (
+      ></div> */}
+      <ObjectDetector setFishName={setFishName} />
+      {/* {!existingVideo && (
         <div className="h-72 w-80 rounded-[12px] bg-gray-500"></div>
-      )}
-    </>
+      )} */}
+    </div>
   );
 };
 

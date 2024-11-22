@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { io, Socket} from 'socket.io-client';
 
 /**
@@ -8,11 +8,17 @@ avg fps: 12.456194878305585
 Camera resolution: 640.0x480.0
 */ 
 
-export default function ObjectDetector() {
+export default function ObjectDetector({setFishName}: {setFishName: (name: string) => void}) {
     const socketRef = useRef<Socket | null>(null);
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const processedImgRef = useRef<HTMLImageElement | null>(null);
+    const [counter, setCounter] = useState(0);
+    const [fishes, setFishes] = useState<{ [key: string]: number }>({});
+    const AVG = 3;
+    const TOTAL = 5;
+    // const AVG = 5;
+    // const TOTAL = 7;
 
     useEffect(() => {
     socketRef.current = io('http://0.0.0.0:1947');
@@ -32,15 +38,68 @@ export default function ObjectDetector() {
     // });
     // handle python processed frames
     // end of base64 version
-    socketRef.current.on('processed_frame', (data) => {
+
+  //   response = {
+  //     "img_bytes": img_bytes,
+  //     "fish_name": fish_name
+  // }
+    type processedFramesType = {
+      img_bytes: string, 
+      fish_name: string,
+    };
+    socketRef.current.on('processed_frame', (data: processedFramesType) => {
         if(!processedImgRef.current){
             console.error('in sockerref current, processimgref has no current');
             return;
         }
-        const blob = new Blob([data], { type: 'image/jpeg' });
+        const blob = new Blob([data.img_bytes], { type: 'image/jpeg' });
         const url = URL.createObjectURL(blob);
         processedImgRef.current.src = url;
+
+        // handle fish name!!!
+        console.log('fish name:', data.fish_name); //TESTING
+        // data.fish_name != '' && setFishName(data.fish_name)
+
+        // setCounter(prev => prev + 1);
+          // console.log('counter', counter);
+        if(data.fish_name != ''){
+          setCounter(prev => prev + 1);
+          // console.log('counter', counter);
+        //   setFishes(prev => {
+        //     const copyFishs = new Map(prev);
+        //     copyFishs.set(data.fish_name, prev.get(data.fish_name) || 0)
+        //     return copyFishs
+        // });
+          setFishes(prev => {
+            const updatedFishes = {...prev, [data.fish_name]: (prev[data.fish_name] || 0) + 1};
+            if (counter !== 0 && counter % TOTAL === 0) {
+              console.log('counter hit!!!', updatedFishes);
+              const mostCommonFish = Object.keys(updatedFishes).reduce((a, b) => (updatedFishes[a] || 0) > (updatedFishes[b] || 0) ? a : b, '');
+              const mostCommonFishValue = updatedFishes[mostCommonFish] || 0;
+              setCounter(0);
+              setFishes({});
+              if (mostCommonFishValue >= AVG) {
+                setFishName(mostCommonFish);
+              }
+            }
+            return updatedFishes;
+          });
+          //   console.log('counter hit!!!', fishs);
+          //   // const mostCommonFish = Object.keys(fishs).reduce((a, b) => (fishs.get(a) || 0) > (fishs.get(b) || 0) ? a : b);
+          //   const mostCommonFish = Object.keys(fishs).reduce((a, b) => (fishs[a] || 0) > (fishs[b] || 0) ? a : b, '');
+          //   const mostCommonFishValue = fishs[mostCommonFish]|| 0;
+          //   setCounter(0);
+          //   setFishes({});
+          //   if (mostCommonFishValue >= AVG){
+          //     setFishName(mostCommonFish);
+          //   }
+          // }
+
+          console.log(fishes)
+        }
     });
+
+    
 
     // testing on my webcam   ------------------------------------------------------------------------------
     const startVideo = async() => {
@@ -169,21 +228,24 @@ export default function ObjectDetector() {
   }, []);
 
   return (
-    <div>
-      <h1>ESP32 Camera Stream with YOLO Processing</h1>
-      <div style={{ display: 'flex' }}>
+    // <div>
+    //   <h1>ESP32 Camera Stream with YOLO Processing</h1>
+
+      <div className='h-full flex place-items-center '>
         <div>
-          <h2>Original Stream</h2>
+          {/* <h2>Original Stream</h2> */}
           {/* <img ref={videoRef} alt="Original Video Stream" />   Originally  */}
           <video ref={videoRef} className="w-[320px] h-[320px] hidden" playsInline muted></video>
           <canvas ref={canvasRef} className="w-[320px] h-[320px] absolute hidden"></canvas>
         </div>
+        {counter}
         <div>
-          <h2>Processed Stream</h2>
+          {/* <h2>Processed Stream</h2> */}
           {/* <img ref={processedImgRef} alt="Processed Video Stream" /> */}
-          <img ref={processedImgRef} alt="Processed Video Stream" />
+          <img ref={processedImgRef} className="rounded-[12px]" alt="Processed Video Stream" />
         </div>
       </div>
-    </div>
+
+    // </div>
   );
 }

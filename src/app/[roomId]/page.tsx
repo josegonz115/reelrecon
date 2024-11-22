@@ -61,6 +61,13 @@ export default function Home() {
     }
   }, []);
 
+  useEffect(() => {
+    if (fishName != '' && fishName != 'No Fish Seen Yet') {
+      console.log('fish name', fishName);
+      setNotificationOpen(true);
+    }
+  }, [fishName]);
+
   return (
     <main className="flex flex-col items-center gap-8 p-8">
       <Notification
@@ -85,7 +92,7 @@ export default function Home() {
       </Button>
       <FishHistory historyOpen={historyOpen} />
       <div className="justify-self-start">
-        <VideoFeed roomId={roomId} />
+        <VideoFeed roomId={roomId} setFishName={setFishName} />
         <h1 className="pt-2 text-center">Video Feed</h1>
       </div>
       <FishSummary
