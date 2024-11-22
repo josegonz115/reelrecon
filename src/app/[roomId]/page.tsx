@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Notification from "@/components/notification";
 import { IMAGE_URLS } from "@/lib/fish-data";
@@ -30,8 +30,13 @@ export default function Home() {
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
 
-  const handleFishNotifResponse = (caught: boolean) => {
+  const handleFishNotifResponse = (name: string, caught: boolean) => {
     setNotificationOpen(false);
+
+    if (typeof window !== "undefined") {
+      localStorage.setItem("name", name);
+      localStorage.setItem("state", caught ? "caught" : "seen");
+    }
     setFishCaught(caught);
   };
 
@@ -43,6 +48,18 @@ export default function Home() {
     const image = IMAGE_URLS?.find((item) => item.text === text);
     return image ? image.tips : ["Unable to find tips for that fish."];
   };
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const name = localStorage.getItem("name");
+      const state = localStorage.getItem("state");
+
+      if (name && state) {
+        setFishName(name);
+        setFishCaught(state == "caught");
+      }
+    }
+  }, []);
 
   return (
     <main className="flex flex-col items-center gap-8 p-8">
