@@ -4,17 +4,17 @@ import { usePathname } from "next/navigation";
 import { FishIcon } from "@/components/fish-icon";
 import { FishOffIcon } from "@/components/fish-off-icon";
 import { db } from "@/firebase";
-import { Button, Dialog } from "@headlessui/react";
-import { ChevronRightIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import { Dialog } from "@headlessui/react";
+import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { format } from "date-fns";
 import { collection, getDocs } from "firebase/firestore";
 
 export default function FishHistory({
-  handleFishHistoryClose,
   historyOpen,
+  handleFishHistoryClose,
 }: {
-  handleFishHistoryClose: () => void;
   historyOpen: boolean;
+  handleFishHistoryClose: () => void;
 }) {
   const pathname = usePathname();
   const [logs, setLogs] = useState<
@@ -48,11 +48,11 @@ export default function FishHistory({
   return (
     <Dialog
       open={historyOpen}
-      onClose={() => console.log("close")}
-      className="z-40"
+      onClose={() => handleFishHistoryClose()}
+      className="pointer-events-none z-40"
     >
       <div className="fixed inset-0 flex items-center justify-center">
-        <div className="flex h-full w-full flex-col items-center rounded-lg bg-gray-900 p-8 text-lg">
+        <div className="flex h-full w-full flex-col items-center rounded-lg bg-gray-900 p-8 text-lg sm:flex sm:max-w-96 sm:justify-self-center">
           <p className="text-2xl">History</p>
           {logs.map((log, idx) => (
             <div
@@ -71,12 +71,6 @@ export default function FishHistory({
           ))}
         </div>
       </div>
-      <Button
-        onClick={() => handleFishHistoryClose()}
-        className="fixed bottom-0 left-0 m-4 rounded-full bg-blue-500 p-6"
-      >
-        <XMarkIcon className="h-6" />
-      </Button>
     </Dialog>
   );
 }

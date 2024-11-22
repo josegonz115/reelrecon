@@ -5,7 +5,10 @@ import { useParams } from "next/navigation";
 import Notification from "@/components/notification";
 import { db } from "@/firebase";
 import { Button } from "@headlessui/react";
-import { ClipboardDocumentListIcon } from "@heroicons/react/24/solid";
+import {
+  ClipboardDocumentListIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/solid";
 import { addDoc, collection } from "firebase/firestore";
 
 import FishHistory from "./fish-history";
@@ -61,13 +64,17 @@ export default function Home() {
       />
       <Button
         onClick={() => handleFishHistoryClose()}
-        className="fixed bottom-0 left-0 m-4 rounded-full bg-blue-500 p-6"
+        className="pointer-events-auto fixed bottom-0 left-0 z-50 m-4 rounded-full bg-blue-500 p-4"
       >
-        <ClipboardDocumentListIcon className="h-6" />
+        {historyOpen ? (
+          <XMarkIcon className="h-8" />
+        ) : (
+          <ClipboardDocumentListIcon className="h-8" />
+        )}
       </Button>
       <FishHistory
-        handleFishHistoryClose={handleFishHistoryClose}
         historyOpen={historyOpen}
+        handleFishHistoryClose={handleFishHistoryClose}
       />
       <div className="justify-self-start">
         <VideoFeed roomId={roomId} />
