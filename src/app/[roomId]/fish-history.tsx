@@ -9,7 +9,7 @@ import {
   ChevronRightIcon,
 } from "@heroicons/react/24/solid";
 import { format } from "date-fns";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { motion } from "framer-motion";
 
 export default function FishHistory({ historyOpen }: { historyOpen: boolean }) {
@@ -22,10 +22,16 @@ export default function FishHistory({ historyOpen }: { historyOpen: boolean }) {
       date: Date;
     }>
   >([]);
+  const [filter, setFilter] = useState(false);
+  const [filterSetting, setFilterSetting] = useState("all");
+  const [caughtCount, setCaughtCount] = useState(0);
+  const [seenCount, setSeenCount] = useState(0);
 
   useEffect(() => {
     const fetchLogs = async () => {
-      await getDocs(collection(db, "log")).then((querySnapshot) => {
+      await getDocs(
+        query(collection(db, "log"), orderBy("timestamp", "desc"))
+      ).then((querySnapshot) => {
         const newData = querySnapshot.docs.map((doc) => {
           const data = doc.data();
           return {
@@ -36,6 +42,8 @@ export default function FishHistory({ historyOpen }: { historyOpen: boolean }) {
           };
         });
         setLogs(newData);
+        setCaughtCount(newData.filter((log) => log.status === "caught").length);
+        setSeenCount(newData.filter((log) => log.status === "seen").length);
       });
     };
 
@@ -88,8 +96,14 @@ export default function FishHistory({ historyOpen }: { historyOpen: boolean }) {
     closed: { y: 50, opacity: 0, transition: { y: { stiffness: 1000 } } },
   };
 
-  const [filter, setFilter] = useState(false);
-  const [filterSetting, setFilterSetting] = useState("all");
+  const footerItemVariants = {
+    open: {
+      y: 0,
+      opacity: 1,
+      transition: { y: { stiffness: 1000, velocity: -100 } },
+    },
+    closed: { y: 0, opacity: 25, transition: { y: { stiffness: 1000 } } },
+  };
 
   const handleFilter: any = () => {
     setFilter((prev) => !prev);
@@ -102,11 +116,11 @@ export default function FishHistory({ historyOpen }: { historyOpen: boolean }) {
       className={`${historyOpen ? "pointer-events-auto" : "pointer-events-none"} fixed inset-0 z-40 flex items-center justify-center`}
     >
       <motion.div
-        className="flex h-full w-full flex-col items-center rounded-lg bg-sky-950 p-8 text-lg sm:flex sm:max-w-96 sm:justify-self-center"
+        className="flex h-full w-full flex-col items-center overflow-y-scroll rounded-lg bg-sky-950 p-8 text-lg sm:flex sm:max-w-96 sm:justify-self-center"
         variants={animationVariants}
       >
         <motion.ul
-          className="w-full"
+          className="w-full pb-20"
           variants={staggerVariants}
         >
           <motion.p
@@ -170,6 +184,19 @@ export default function FishHistory({ historyOpen }: { historyOpen: boolean }) {
               </motion.li>
             ))}
         </motion.ul>
+        <motion.div
+          className="text-md fixed bottom-0 flex h-20 w-full items-end justify-end gap-4 bg-sky-950 p-8"
+          variants={footerItemVariants}
+        >
+          <motion.div className="flex flex-row items-center gap-1">
+            <motion.p>{caughtCount}</motion.p>
+            <FishIcon className="h-6" />
+          </motion.div>
+          <motion.div className="flex flex-row items-center gap-1">
+            <motion.p>{seenCount}</motion.p>
+            <FishOffIcon className="h-6" />
+          </motion.div>
+        </motion.div>
       </motion.div>
     </motion.div>
   );

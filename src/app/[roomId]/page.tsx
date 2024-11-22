@@ -3,13 +3,12 @@
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import Notification from "@/components/notification";
-import { db } from "@/firebase";
+import { IMAGE_URLS } from "@/lib/fish-data";
 import { Button } from "@headlessui/react";
 import {
   ClipboardDocumentListIcon,
   XMarkIcon,
 } from "@heroicons/react/24/solid";
-import { addDoc, collection } from "firebase/firestore";
 import { motion } from "framer-motion";
 
 import FishHistory from "./fish-history";
@@ -21,13 +20,13 @@ export default function Home() {
   const params = useParams();
   const roomId = params.roomId;
 
-  const [fishName, setFishName] = useState("Clownfish");
-  const [fishCaught, setFishCaught] = useState(true);
-  const [fishingTips, setFishingTips] = useState([
-    "Use the right bait or lure",
-    "Fish during the early morning or late evening",
-    "Stay quiet and minimize movement",
-  ]);
+  const [fishName, setFishName] = useState("No Fish Seen Yet");
+  const [fishCaught, setFishCaught] = useState(false);
+  // const [fishingTips, setFishingTips] = useState([
+  //   "Use the right bait or lure",
+  //   "Fish during the early morning or late evening",
+  //   "Stay quiet and minimize movement",
+  // ]);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
 
@@ -36,23 +35,13 @@ export default function Home() {
     setFishCaught(caught);
   };
 
-  const addFish = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-
-    try {
-      const docRef = await addDoc(collection(db, "log"), {
-        name: "mudfish",
-        timestamp: new Date().getTime(),
-        status: "caught",
-      });
-      console.log("Document written with ID: ", docRef.id);
-    } catch (e) {
-      console.error("Error adding document: ", e);
-    }
-  };
-
   const handleFishHistoryToggle = () => {
     setHistoryOpen((prev) => !prev);
+  };
+
+  const getFishTips = (text: string) => {
+    const image = IMAGE_URLS?.find((item) => item.text === text);
+    return image ? image.tips : ["Unable to find tips for that fish."];
   };
 
   return (
@@ -86,15 +75,7 @@ export default function Home() {
         name={fishName}
         caught={fishCaught}
       />
-      <Tips fishingTips={fishingTips} />
-      <button
-        className="bg-sky-950 p-4"
-        onClick={(e) => {
-          addFish(e);
-        }}
-      >
-        ADD FISH
-      </button>
+      <Tips fishingTips={getFishTips(fishName)} />
     </main>
   );
 }

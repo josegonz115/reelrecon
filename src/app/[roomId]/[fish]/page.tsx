@@ -19,6 +19,11 @@ const getFishDesc = (text: string) => {
   return image ? image.desc : "Unable to find a description for that fish.";
 };
 
+const getFishTips = (text: string) => {
+  const image = IMAGE_URLS?.find((item) => item.text === text);
+  return image ? image.tips : ["Unable to find tips for that fish."];
+};
+
 export default function Home() {
   const params = useParams();
   const roomId = params.roomId;
@@ -36,7 +41,7 @@ export default function Home() {
   };
 
   return (
-    <main className="flex flex-col items-center gap-8 p-8">
+    <main className="flex flex-col items-center gap-8 overflow-y-scroll p-8">
       <Notification
         fishName={fishName}
         handleFishNotifResponse={handleFishNotifResponse}
@@ -46,13 +51,19 @@ export default function Home() {
         <Link href={`/${roomId}`}>
           <ChevronLeftIcon className="h-6 justify-self-start" />
         </Link>
-        <h1 className="w-full pr-4 text-center">{fishName}</h1>
+        <h1 className="w-full pr-4 text-center text-2xl">{fishName}</h1>
       </div>
       <img
         className="max-h-52"
         src={getImageUrl(fishName)}
       ></img>
       <p>{getFishDesc(fishName)}</p>
+      <div>
+        <p className="pb-1 text-lg"> Fishing Tips: </p>
+        {getFishTips(fishName).map((tip, idx) => (
+          <p key={idx}>{`${idx + 1}. ${tip}`}</p>
+        ))}
+      </div>
     </main>
   );
 }
