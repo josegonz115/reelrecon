@@ -116,11 +116,11 @@ export default function FishHistory({ historyOpen }: { historyOpen: boolean }) {
       className={`${historyOpen ? "pointer-events-auto" : "pointer-events-none"} fixed inset-0 z-40 flex items-center justify-center`}
     >
       <motion.div
-        className="flex h-full w-full flex-col items-center rounded-lg bg-sky-950 p-8 text-lg sm:flex sm:max-w-96 sm:justify-self-center"
+        className="flex h-full w-full flex-col items-center overflow-y-scroll rounded-lg bg-sky-950 p-8 text-lg sm:flex sm:max-w-96 sm:justify-self-center"
         variants={animationVariants}
       >
         <motion.ul
-          className="w-full"
+          className="w-full pb-20"
           variants={staggerVariants}
         >
           <motion.p
@@ -185,7 +185,7 @@ export default function FishHistory({ historyOpen }: { historyOpen: boolean }) {
             ))}
         </motion.ul>
         <motion.div
-          className="text-md fixed bottom-0 flex h-24 w-full items-end justify-end gap-4 bg-sky-950 p-8"
+          className="text-md fixed bottom-0 flex h-20 w-full items-end justify-end gap-4 bg-sky-950 p-8"
           variants={footerItemVariants}
         >
           <motion.div className="flex flex-row items-center gap-1">
