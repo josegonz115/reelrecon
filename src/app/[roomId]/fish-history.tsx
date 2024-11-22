@@ -169,7 +169,9 @@ export default function FishHistory({ historyOpen }: { historyOpen: boolean }) {
         animate(scope.current, { x: 0, opacity: 1 }, { duration: 0.2 });
     }
     setTimeout(() => {
-      document.querySelector("#deletebg" + id)?.classList.remove("bg-red-600");
+      document
+        .querySelector("#deletebg" + id)
+        ?.classList.remove("bg-gradient-to-r", "from-red-600", "to-sky-950");
     }, 500);
   }
 
@@ -252,11 +254,17 @@ export default function FishHistory({ historyOpen }: { historyOpen: boolean }) {
                     }
                     dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
                     dragElastic={{ left: 0, right: 0.2, top: 0, bottom: 0 }}
-                    onDragStart={() =>
-                      document
-                        .querySelector("#deletebg" + log.id)
-                        ?.classList.add("bg-red-600")
-                    }
+                    onDrag={(event, info) => {
+                      if (info.offset.x >= 0) {
+                        document
+                          .querySelector("#deletebg" + log.id)
+                          ?.classList.add(
+                            "bg-gradient-to-r",
+                            "from-red-600",
+                            "to-sky-950"
+                          );
+                      }
+                    }}
                   >
                     <p className="pl-1">
                       {log.name.charAt(0).toUpperCase() + log.name.slice(1)}
