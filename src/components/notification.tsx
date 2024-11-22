@@ -1,4 +1,6 @@
+import { db } from "@/firebase";
 import { Dialog, DialogBackdrop } from "@headlessui/react";
+import { addDoc, collection } from "firebase/firestore";
 
 export default function Notification({
   fishName,
@@ -9,6 +11,25 @@ export default function Notification({
   handleFishNotifResponse: (caught: boolean) => void;
   notificationOpen: boolean;
 }) {
+  const addFish = async (
+    e: React.MouseEvent<HTMLButtonElement>,
+    caught: boolean
+  ) => {
+    e.preventDefault();
+
+    const fishStatus = caught ? "caught" : "seen";
+    try {
+      const docRef = await addDoc(collection(db, "log"), {
+        name: fishName,
+        timestamp: new Date().getTime(),
+        status: fishStatus,
+      });
+      console.log("Document written with ID: ", docRef.id);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  };
+
   return (
     <Dialog
       open={notificationOpen}
@@ -25,13 +46,19 @@ export default function Notification({
           <hr className="w-full min-w-72 border-gray-400" />
           <div className="flex w-full justify-around text-white">
             <button
-              onClick={() => handleFishNotifResponse(false)}
+              onClick={(e) => {
+                addFish(e, false);
+                handleFishNotifResponse(false);
+              }}
               className="h-full w-full border-r border-gray-400 py-3"
             >
               Missed
             </button>
             <button
-              onClick={() => handleFishNotifResponse(true)}
+              onClick={(e) => {
+                addFish(e, true);
+                handleFishNotifResponse(true);
+              }}
               className="w-full py-3"
             >
               Caught

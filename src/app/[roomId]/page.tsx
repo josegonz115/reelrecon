@@ -3,13 +3,11 @@
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import Notification from "@/components/notification";
-import { db } from "@/firebase";
 import { Button } from "@headlessui/react";
 import {
   ClipboardDocumentListIcon,
   XMarkIcon,
 } from "@heroicons/react/24/solid";
-import { addDoc, collection } from "firebase/firestore";
 import { motion } from "framer-motion";
 
 import FishHistory from "./fish-history";
@@ -34,21 +32,6 @@ export default function Home() {
   const handleFishNotifResponse = (caught: boolean) => {
     setNotificationOpen(false);
     setFishCaught(caught);
-  };
-
-  const addFish = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-
-    try {
-      const docRef = await addDoc(collection(db, "log"), {
-        name: "mudfish",
-        timestamp: new Date().getTime(),
-        status: "caught",
-      });
-      console.log("Document written with ID: ", docRef.id);
-    } catch (e) {
-      console.error("Error adding document: ", e);
-    }
   };
 
   const handleFishHistoryToggle = () => {
@@ -87,14 +70,6 @@ export default function Home() {
         caught={fishCaught}
       />
       <Tips fishingTips={fishingTips} />
-      <button
-        className="bg-sky-950 p-4"
-        onClick={(e) => {
-          addFish(e);
-        }}
-      >
-        ADD FISH
-      </button>
     </main>
   );
 }
