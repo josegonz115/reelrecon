@@ -29,6 +29,7 @@ export default function Home() {
   // ]);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [displayFishName, setDisplayFishName] = useState("No Fish Seen Yet");
 
   const handleFishNotifResponse = (name: string, caught: boolean) => {
     setNotificationOpen(false);
@@ -62,16 +63,20 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (fishName != '' && fishName != 'No Fish Seen Yet') {
-      console.log('fish name', fishName);
+    if (fishName != "" && fishName != "No Fish Seen Yet") {
+      console.log("fish name", fishName);
+      setDisplayFishName(fishName);
       setNotificationOpen(true);
     }
+    setTimeout(() => {
+      setFishName("");
+    }, 7000);
   }, [fishName]);
 
   return (
     <main className="flex flex-col items-center gap-8 p-8">
       <Notification
-        fishName={fishName}
+        fishName={displayFishName}
         handleFishNotifResponse={handleFishNotifResponse}
         notificationOpen={notificationOpen}
       />
@@ -92,14 +97,17 @@ export default function Home() {
       </Button>
       <FishHistory historyOpen={historyOpen} />
       <div className="justify-self-start">
-        <VideoFeed roomId={roomId} setFishName={setFishName} />
+        <VideoFeed
+          roomId={roomId}
+          setFishName={setFishName}
+        />
         <h1 className="pt-2 text-center">Video Feed</h1>
       </div>
       <FishSummary
-        name={fishName}
+        name={displayFishName}
         caught={fishCaught}
       />
-      <Tips fishingTips={getFishTips(fishName)} />
+      <Tips fishingTips={getFishTips(displayFishName)} />
     </main>
   );
 }
