@@ -23,9 +23,11 @@ export default function FishSummary({
           <FishOffIcon className="h-8 text-white" />
         )}
       </div>
-      <Link href={`${pathname}/${name}`}>
-        <ChevronRightIcon className="h-6" />
-      </Link>
+      {name != "No Fish Seen Yet" && (
+        <Link href={`${pathname}/${name}`}>
+          <ChevronRightIcon className="h-6" />
+        </Link>
+      )}
     </div>
   );
 }

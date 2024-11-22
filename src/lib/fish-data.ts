@@ -77,4 +77,14 @@ export const IMAGE_URLS = [
       "Look for pangasius near underwater structures or flowing water for the best chances.",
     ],
   },
+  {
+    text: "No Fish Seen Yet",
+    tips: [
+      "Research the local fishing regulations and ensure you have the proper licenses before fishing.",
+      "Use the appropriate bait and tackle for the specific fish species you’re targeting.",
+      "Fish during peak activity times, such as early morning, late afternoon, or during overcast conditions.",
+      "Be patient and observant, watching for signs like ripples, jumping fish, or bird activity to locate fish.",
+      "Keep your gear clean and in good condition to ensure optimal performance on your fishing trips.",
+    ],
+  },
 ];

@@ -20,8 +20,8 @@ export default function Home() {
   const params = useParams();
   const roomId = params.roomId;
 
-  const [fishName, setFishName] = useState("Clownfish");
-  const [fishCaught, setFishCaught] = useState(true);
+  const [fishName, setFishName] = useState("No Fish Seen Yet");
+  const [fishCaught, setFishCaught] = useState(false);
   // const [fishingTips, setFishingTips] = useState([
   //   "Use the right bait or lure",
   //   "Fish during the early morning or late evening",
@@ -41,7 +41,7 @@ export default function Home() {
 
   const getFishTips = (text: string) => {
     const image = IMAGE_URLS?.find((item) => item.text === text);
-    return image ? image.tips : [];
+    return image ? image.tips : ["Unable to find tips for that fish."];
   };
 
   return (
