@@ -29,7 +29,7 @@ export default function Home() {
     "Stay quiet and minimize movement",
   ]);
   const [notificationOpen, setNotificationOpen] = useState(false);
-  const [historyOpen, setHistoryOpen] = useState(true);
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   const handleFishNotifResponse = (caught: boolean) => {
     setNotificationOpen(false);

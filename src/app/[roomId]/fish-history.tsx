@@ -4,7 +4,10 @@ import { usePathname } from "next/navigation";
 import { FishIcon } from "@/components/fish-icon";
 import { FishOffIcon } from "@/components/fish-off-icon";
 import { db } from "@/firebase";
-import { ChevronRightIcon } from "@heroicons/react/24/solid";
+import {
+  AdjustmentsHorizontalIcon,
+  ChevronRightIcon,
+} from "@heroicons/react/24/solid";
 import { format } from "date-fns";
 import { collection, getDocs } from "firebase/firestore";
 import { motion } from "framer-motion";
@@ -85,11 +88,18 @@ export default function FishHistory({ historyOpen }: { historyOpen: boolean }) {
     closed: { y: 50, opacity: 0, transition: { y: { stiffness: 1000 } } },
   };
 
+  const [filter, setFilter] = useState(false);
+  const [filterSetting, setFilterSetting] = useState("all");
+
+  const handleFilter: any = () => {
+    setFilter((prev) => !prev);
+  };
+
   return (
     <motion.div
       initial={false}
       animate={historyOpen ? "open" : "closed"}
-      className="pointer-events-auto fixed inset-0 z-40 flex items-center justify-center"
+      className={`${historyOpen ? "pointer-events-auto" : "pointer-events-none"} fixed inset-0 z-40 flex items-center justify-center`}
     >
       <motion.div
         className="flex h-full w-full flex-col items-center rounded-lg bg-sky-950 p-8 text-lg sm:flex sm:max-w-96 sm:justify-self-center"
@@ -105,22 +115,60 @@ export default function FishHistory({ historyOpen }: { historyOpen: boolean }) {
           >
             History
           </motion.p>
-          {logs.map((log, idx) => (
-            <motion.li
-              className="flex w-full flex-row items-center justify-between border-b border-gray-400 py-6"
-              key={idx}
-              variants={itemVariants}
+          <motion.div
+            className="flex min-h-8 w-full flex-row place-items-center justify-end gap-6"
+            variants={itemVariants}
+          >
+            {filter && (
+              <>
+                <motion.p
+                  className={`${filterSetting == "all" && "underline underline-offset-4"}`}
+                  onClick={() => setFilterSetting("all")}
+                >
+                  All
+                </motion.p>
+                <motion.p
+                  className={`${filterSetting == "caught" && "underline underline-offset-4"}`}
+                  onClick={() => setFilterSetting("caught")}
+                >
+                  Caught
+                </motion.p>
+                <motion.p
+                  className={`${filterSetting == "seen" && "underline underline-offset-4"}`}
+                  onClick={() => setFilterSetting("seen")}
+                >
+                  Seen
+                </motion.p>
+              </>
+            )}
+            <motion.button
+              className="justify-self-end"
+              onClick={() => handleFilter()}
             >
-              <p>{log.name.charAt(0).toUpperCase() + log.name.slice(1)}</p>
-              <p className="text-gray-400">
-                {format(log.date, "M/d/yy HH:mm")}
-              </p>
-              {log.status === "caught" ? <FishIcon /> : <FishOffIcon />}
-              <Link href={`${pathname}/${log.name}`}>
-                <ChevronRightIcon className="h-6" />
-              </Link>
-            </motion.li>
-          ))}
+              <AdjustmentsHorizontalIcon className="h-6" />
+            </motion.button>
+          </motion.div>
+          {logs
+            .filter(
+              (log: any) =>
+                log.status === filterSetting || filterSetting === "all"
+            )
+            .map((log, idx) => (
+              <motion.li
+                className="flex w-full flex-row items-center justify-between border-b border-gray-400 py-6"
+                key={idx}
+                variants={itemVariants}
+              >
+                <p>{log.name.charAt(0).toUpperCase() + log.name.slice(1)}</p>
+                <p className="text-gray-400">
+                  {format(log.date, "M/d/yy HH:mm")}
+                </p>
+                {log.status === "caught" ? <FishIcon /> : <FishOffIcon />}
+                <Link href={`${pathname}/${log.name}`}>
+                  <ChevronRightIcon className="h-6" />
+                </Link>
+              </motion.li>
+            ))}
         </motion.ul>
       </motion.div>
     </motion.div>
