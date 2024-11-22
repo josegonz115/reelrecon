@@ -148,7 +148,9 @@ const VideoFeed = ({ roomId }) => {
         ref={videoGridRef}
         style={{ display: "grid", gap: "10px" }}
       ></div>
-      {!existingVideo && <div className="bg-gray-500 p-40"></div>}
+      {!existingVideo && (
+        <div className="rounded-[12px] bg-gray-500 p-40"></div>
+      )}
     </>
   );
 };

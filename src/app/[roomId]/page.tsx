@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import Notification from "@/components/notification";
+import { IMAGE_URLS } from "@/lib/fish-data";
 import { Button } from "@headlessui/react";
 import {
   ClipboardDocumentListIcon,
@@ -21,11 +22,11 @@ export default function Home() {
 
   const [fishName, setFishName] = useState("Clownfish");
   const [fishCaught, setFishCaught] = useState(true);
-  const [fishingTips, setFishingTips] = useState([
-    "Use the right bait or lure",
-    "Fish during the early morning or late evening",
-    "Stay quiet and minimize movement",
-  ]);
+  // const [fishingTips, setFishingTips] = useState([
+  //   "Use the right bait or lure",
+  //   "Fish during the early morning or late evening",
+  //   "Stay quiet and minimize movement",
+  // ]);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
 
@@ -36,6 +37,11 @@ export default function Home() {
 
   const handleFishHistoryToggle = () => {
     setHistoryOpen((prev) => !prev);
+  };
+
+  const getFishTips = (text: string) => {
+    const image = IMAGE_URLS?.find((item) => item.text === text);
+    return image ? image.tips : [];
   };
 
   return (
@@ -69,7 +75,7 @@ export default function Home() {
         name={fishName}
         caught={fishCaught}
       />
-      <Tips fishingTips={fishingTips} />
+      <Tips fishingTips={getFishTips(fishName)} />
     </main>
   );
 }
