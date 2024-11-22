@@ -116,11 +116,11 @@ export default function FishHistory({ historyOpen }: { historyOpen: boolean }) {
             History
           </motion.p>
           <motion.div
-            className="flex min-h-8 w-full flex-row place-items-center justify-end gap-6"
+            className={`flex min-h-8 w-full flex-row place-items-center ${filter ? "justify-between" : "justify-end"}`}
             variants={itemVariants}
           >
             {filter && (
-              <>
+              <span className="flex flex-row gap-8 justify-self-start">
                 <motion.p
                   className={`${filterSetting == "all" && "underline underline-offset-4"}`}
                   onClick={() => setFilterSetting("all")}
@@ -139,7 +139,7 @@ export default function FishHistory({ historyOpen }: { historyOpen: boolean }) {
                 >
                   Seen
                 </motion.p>
-              </>
+              </span>
             )}
             <motion.button
               className="justify-self-end"
