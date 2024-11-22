@@ -28,8 +28,9 @@ export default function Home() {
   } else {
     fishName = decodeURIComponent(params.fish);
   }
+  fishName = fishName.charAt(0).toUpperCase() + fishName.slice(1);
 
-  let [notificationOpen, setNotificationOpen] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
   const handleFishNotifResponse = (caught: boolean) => {
     setNotificationOpen(false);
   };
