@@ -4,18 +4,12 @@ import { usePathname } from "next/navigation";
 import { FishIcon } from "@/components/fish-icon";
 import { FishOffIcon } from "@/components/fish-off-icon";
 import { db } from "@/firebase";
-import { Dialog } from "@headlessui/react";
 import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { format } from "date-fns";
 import { collection, getDocs } from "firebase/firestore";
+import { motion } from "framer-motion";
 
-export default function FishHistory({
-  historyOpen,
-  handleFishHistoryClose,
-}: {
-  historyOpen: boolean;
-  handleFishHistoryClose: () => void;
-}) {
+export default function FishHistory({ historyOpen }: { historyOpen: boolean }) {
   const pathname = usePathname();
   const [logs, setLogs] = useState<
     Array<{
@@ -45,19 +39,77 @@ export default function FishHistory({
     fetchLogs();
   }, []);
 
+  const animationVariants = {
+    open: {
+      clipPath: "circle(1500px at 48px 94%)",
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 20,
+        restDelta: 2,
+      },
+    },
+    closed: {
+      opacity: 1,
+      clipPath: "circle(0px at 48px 94%)",
+      transition: {
+        clipPath: {
+          delay: 0.4,
+          type: "spring",
+          stiffness: 300,
+          damping: 60,
+        },
+      },
+    },
+  };
+
+  const staggerVariants = {
+    open: {
+      transition: { staggerChildren: 0.07, delayChildren: 0.2 },
+    },
+    closed: {
+      transition: {
+        staggerChildren: 0.05,
+        delayChildren: 0.2,
+        staggerDirection: -1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    open: {
+      y: 0,
+      opacity: 1,
+      transition: { y: { stiffness: 1000, velocity: -100 } },
+    },
+    closed: { y: 50, opacity: 0, transition: { y: { stiffness: 1000 } } },
+  };
+
   return (
-    <Dialog
-      open={historyOpen}
-      onClose={() => handleFishHistoryClose()}
-      className="pointer-events-none z-40"
+    <motion.div
+      initial={false}
+      animate={historyOpen ? "open" : "closed"}
+      className="pointer-events-auto fixed inset-0 z-40 flex items-center justify-center"
     >
-      <div className="fixed inset-0 flex items-center justify-center">
-        <div className="flex h-full w-full flex-col items-center rounded-lg bg-gray-900 p-8 text-lg sm:flex sm:max-w-96 sm:justify-self-center">
-          <p className="text-2xl">History</p>
+      <motion.div
+        className="flex h-full w-full flex-col items-center rounded-lg bg-sky-950 p-8 text-lg sm:flex sm:max-w-96 sm:justify-self-center"
+        variants={animationVariants}
+      >
+        <motion.ul
+          className="w-full"
+          variants={staggerVariants}
+        >
+          <motion.p
+            className="mb-4 text-center text-2xl"
+            variants={itemVariants}
+          >
+            History
+          </motion.p>
           {logs.map((log, idx) => (
-            <div
+            <motion.li
               className="flex w-full flex-row items-center justify-between border-b border-gray-400 py-6"
               key={idx}
+              variants={itemVariants}
             >
               <p>{log.name.charAt(0).toUpperCase() + log.name.slice(1)}</p>
               <p className="text-gray-400">
@@ -67,10 +119,10 @@ export default function FishHistory({
               <Link href={`${pathname}/${log.name}`}>
                 <ChevronRightIcon className="h-6" />
               </Link>
-            </div>
+            </motion.li>
           ))}
-        </div>
-      </div>
-    </Dialog>
+        </motion.ul>
+      </motion.div>
+    </motion.div>
   );
 }

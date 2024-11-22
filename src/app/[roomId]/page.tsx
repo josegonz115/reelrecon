@@ -10,6 +10,7 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/solid";
 import { addDoc, collection } from "firebase/firestore";
+import { motion } from "framer-motion";
 
 import FishHistory from "./fish-history";
 import FishSummary from "./fish-summary";
@@ -50,8 +51,7 @@ export default function Home() {
     }
   };
 
-  const handleFishHistoryClose = () => {
-    console.log("toggle");
+  const handleFishHistoryToggle = () => {
     setHistoryOpen((prev) => !prev);
   };
 
@@ -63,19 +63,21 @@ export default function Home() {
         notificationOpen={notificationOpen}
       />
       <Button
-        onClick={() => handleFishHistoryClose()}
-        className="pointer-events-auto fixed bottom-0 left-0 z-50 m-4 rounded-full bg-blue-500 p-4"
+        onClick={() => handleFishHistoryToggle()}
+        className="pointer-events-auto fixed bottom-0 left-0 z-50 m-4 rounded-full bg-sky-950 p-4"
       >
-        {historyOpen ? (
-          <XMarkIcon className="h-8" />
-        ) : (
-          <ClipboardDocumentListIcon className="h-8" />
-        )}
+        <motion.div
+          animate={historyOpen ? { rotate: 180 } : { rotate: 0 }}
+          transition={{ type: "spring", stiffness: 300 }}
+        >
+          {historyOpen ? (
+            <XMarkIcon className="h-8" />
+          ) : (
+            <ClipboardDocumentListIcon className="h-8" />
+          )}
+        </motion.div>
       </Button>
-      <FishHistory
-        historyOpen={historyOpen}
-        handleFishHistoryClose={handleFishHistoryClose}
-      />
+      <FishHistory historyOpen={historyOpen} />
       <div className="justify-self-start">
         <VideoFeed roomId={roomId} />
         <h1 className="pt-2 text-center">Video Feed</h1>
@@ -85,9 +87,8 @@ export default function Home() {
         caught={fishCaught}
       />
       <Tips fishingTips={fishingTips} />
-
       <button
-        className="bg-blue-500 p-4"
+        className="bg-sky-950 p-4"
         onClick={(e) => {
           addFish(e);
         }}
