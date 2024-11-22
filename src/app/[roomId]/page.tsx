@@ -57,9 +57,6 @@ export default function Home() {
       if (name && state) {
         setFishName(name);
         setFishCaught(state == "caught");
-
-        localStorage.removeItem("name");
-        localStorage.removeItem("state");
       }
     }
   }, []);
