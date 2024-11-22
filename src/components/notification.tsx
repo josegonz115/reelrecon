@@ -34,7 +34,6 @@ export default function Notification({
     <Dialog
       open={notificationOpen}
       onClose={() => handleFishNotifResponse(false)}
-      className="p-8"
     >
       <DialogBackdrop className="fixed inset-0 bg-black/30" />
       <div className="fixed inset-0 flex w-screen items-center justify-center">
